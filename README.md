@@ -39,3 +39,7 @@ The dashboard expects the ESP32 to notify JSON objects with the existing fields 
 Motor controls are disabled until the dashboard is connected and has received fresh telemetry. While a control is held, the dashboard repeats only its matching command. Releasing the control, leaving it, cancelling the pointer, losing window focus, hiding the page, becoming stale, disconnecting, or pressing Emergency stop sends `STOP` and clears the active hold.
 
 No server, database, authentication, or pin changes are part of this project.
+
+## Project structure
+
+The project uses a standard Vite + TypeScript layout: `public/` holds static route metadata, `src/` holds the browser client and dashboard styles, and the root contains Vite, TypeScript, ESLint, Prettier, Wrangler, and package configuration. The BLE contract and hardware pin map remain documented above.

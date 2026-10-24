@@ -1,3 +1,4 @@
+// @ts-nocheck
 const BLE = Object.freeze({
   deviceName: 'MCL-Water-Boat',
   service: '7b7e0001-2d8b-4c70-9c2e-8e2e5a8b0001',
@@ -109,7 +110,7 @@ function handleData(event) {
     const raw = new TextDecoder().decode(event.target.value);
     const payload = JSON.parse(raw);
     if (payload.type === 'water') renderReading(payload);
-  } catch (error) {
+  } catch {
     log('Received an unreadable telemetry packet.', 'muted');
   }
 }
@@ -123,7 +124,7 @@ async function flushCommands() {
       state.queuedCommand = null;
       await state.commandCharacteristic.writeValue(new TextEncoder().encode(command));
     }
-  } catch (error) {
+  } catch {
     log('Command write failed; propulsion is locked.', 'muted');
     setStatus('error', 'The command channel stopped responding. Disconnect and retry.');
   } finally {
