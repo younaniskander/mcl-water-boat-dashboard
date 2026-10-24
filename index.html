@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#081421" />
+    <meta name="description" content="Safety-focused Web Bluetooth dashboard for the MCL Water Boat ESP32." />
+    <title>MCL Water Boat · Mission Control</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <p class="eyebrow">MCL / field systems</p>
+            <h1>Water Boat <span>mission control</span></h1>
+          </div>
+        </div>
+        <div class="topbar-meta">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span id="headerConnection">BLE offline</span>
+          <span class="meta-divider"></span>
+          <span id="headerClock">--:--:--</span>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="hero-row">
+          <div class="hero-copy">
+            <p class="eyebrow accent">Surface telemetry / live link</p>
+            <h2>Read the water.<br /><em>Move with intent.</em></h2>
+            <p class="hero-description">A direct browser-to-ESP32 console for the MCL water boat. Connect over Bluetooth to monitor the sample stream and keep propulsion under deliberate, hold-to-run control.</p>
+          </div>
+          <div class="connection-card" aria-labelledby="connectionTitle">
+            <div class="card-kicker"><span class="signal-icon" aria-hidden="true"></span> Link control</div>
+            <div class="connection-heading">
+              <div>
+                <h3 id="connectionTitle">ESP32 / MCL-Water-Boat</h3>
+                <p id="connectionSubtext">Select the boat to open a secure BLE session.</p>
+              </div>
+              <span id="connectionPill" class="status-pill neutral">OFFLINE</span>
+            </div>
+            <div class="connection-actions">
+              <button id="connectButton" class="button button-primary" type="button"><span class="button-icon">↗</span> Connect boat</button>
+              <button id="disconnectButton" class="button button-quiet" type="button" disabled>Disconnect</button>
+            </div>
+            <div class="safety-strip">
+              <span id="safetyIndicator" class="safety-indicator unsafe"></span>
+              <span><strong id="safetyTitle">Safety locked</strong><small id="safetyDetail">Connect and receive fresh telemetry before propulsion is armed.</small></span>
+            </div>
+            <p id="browserNotice" class="browser-notice hidden"></p>
+          </div>
+        </section>
+
+        <section class="telemetry-section" aria-labelledby="telemetryTitle">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 / water quality</p>
+              <h2 id="telemetryTitle">Live telemetry</h2>
+            </div>
+            <div class="freshness"><span class="freshness-ring" id="freshnessRing"></span><span id="freshnessText">Waiting for data</span></div>
+          </div>
+          <div class="metric-grid">
+            <article class="metric-card metric-ph">
+              <div class="metric-top"><span class="metric-label">pH balance</span><span class="metric-index">01</span></div>
+              <div class="metric-value"><span id="phValue">--</span><small>pH</small></div>
+              <div class="metric-foot"><span>Electrode input</span><strong id="phVoltage">-- V</strong></div>
+              <div class="metric-accent" aria-hidden="true"></div>
+            </article>
+            <article class="metric-card metric-turbidity">
+              <div class="metric-top"><span class="metric-label">Turbidity</span><span class="metric-index">02</span></div>
+              <div class="metric-value"><span id="turbidityValue">--</span><small>NTU</small></div>
+              <div class="metric-foot"><span>Optical input</span><strong id="turbidityVoltage">-- V</strong></div>
+              <div class="metric-accent" aria-hidden="true"></div>
+            </article>
+            <article class="metric-card metric-ec">
+              <div class="metric-top"><span class="metric-label">Conductivity</span><span class="metric-index">03</span></div>
+              <div class="metric-value"><span id="ecValue">--</span><small>mS/cm</small></div>
+              <div class="metric-foot"><span>EC input</span><strong id="ecVoltage">-- V</strong></div>
+              <div class="metric-accent" aria-hidden="true"></div>
+            </article>
+            <article class="metric-card metric-salinity">
+              <div class="metric-top"><span class="metric-label">Salinity</span><span class="metric-index">04</span></div>
+              <div class="metric-value"><span id="salinityValue">--</span><small>ppt</small></div>
+              <div class="metric-foot"><span>Estimated at 25°C</span><strong id="sampleAge">--</strong></div>
+              <div class="metric-accent" aria-hidden="true"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="operations-grid">
+          <article class="panel gps-panel" aria-labelledby="gpsTitle">
+            <div class="panel-heading">
+              <div><p class="eyebrow">02 / navigation</p><h2 id="gpsTitle">Position fix</h2></div>
+              <span id="gpsPill" class="status-pill neutral">NO FIX</span>
+            </div>
+            <div class="coordinates">
+              <div class="coordinate-line"><span>Latitude</span><strong id="latitude">--.------</strong><span class="coordinate-unit">°</span></div>
+              <div class="coordinate-line"><span>Longitude</span><strong id="longitude">--.------</strong><span class="coordinate-unit">°</span></div>
+            </div>
+            <div class="gps-note"><span class="location-crosshair" aria-hidden="true">+</span><span id="gpsDetail">Waiting for a valid GPS report from the boat.</span></div>
+          </article>
+
+          <article class="panel propulsion-panel" aria-labelledby="propulsionTitle">
+            <div class="panel-heading">
+              <div><p class="eyebrow">03 / propulsion</p><h2 id="propulsionTitle">Hold to run</h2></div>
+              <span class="armed-label"><span id="armedDot"></span><span id="armedText">LOCKED</span></span>
+            </div>
+            <p class="propulsion-intro">Motors respond only while a control is held. Releasing, leaving the control, or losing the BLE link sends <code>STOP</code>.</p>
+            <div class="motor-controls">
+              <button class="motor-button" data-command="L1" type="button" disabled><span class="motor-direction">←</span><span><strong>Port</strong><small>Left motor · L1</small></span><span class="hold-mark">HOLD</span></button>
+              <button class="motor-button" data-command="B1" type="button" disabled><span class="motor-direction both">↔</span><span><strong>Both</strong><small>Both motors · B1</small></span><span class="hold-mark">HOLD</span></button>
+              <button class="motor-button" data-command="R1" type="button" disabled><span class="motor-direction">→</span><span><strong>Starboard</strong><small>Right motor · R1</small></span><span class="hold-mark">HOLD</span></button>
+            </div>
+            <button id="stopButton" class="stop-button" type="button"><span class="stop-symbol">■</span> Emergency stop <span>STOP</span></button>
+          </article>
+        </section>
+
+        <section class="system-grid">
+          <article class="panel protocol-panel" aria-labelledby="protocolTitle">
+            <div class="panel-heading"><div><p class="eyebrow">04 / compatibility</p><h2 id="protocolTitle">ESP32 link profile</h2></div><span class="protocol-badge">UNCHANGED</span></div>
+            <div class="profile-list">
+              <div><span>Device</span><strong>MCL-Water-Boat</strong></div>
+              <div><span>Service</span><code>7b7e0001…0001</code></div>
+              <div><span>Telemetry</span><code>7b7e0002…0001</code></div>
+              <div><span>Commands</span><code>7b7e0003…0001</code></div>
+            </div>
+          </article>
+          <article class="panel activity-panel" aria-labelledby="activityTitle">
+            <div class="panel-heading"><div><p class="eyebrow">05 / session log</p><h2 id="activityTitle">Operator activity</h2></div><button id="clearLogButton" class="text-button" type="button">Clear</button></div>
+            <div id="activityLog" class="activity-log" aria-live="polite"><div class="log-entry muted"><span class="log-time">--:--:--</span><span>Awaiting operator connection.</span></div></div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer"><span>MCL WATER BOAT / CLIENT-ONLY CONSOLE</span><span>BLE protocol locked to ESP32 firmware</span></footer>
+    </div>
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>
