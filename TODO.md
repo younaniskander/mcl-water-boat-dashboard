@@ -18,4 +18,4 @@
 ## 4. Responsive client-only delivery
 - [x] Deliver a responsive marine dashboard optimized for laptop and tablet use with no server, database, or authentication.
 - [x] Serve the complete page route manifest at `/manus-routes.json`.
-- [ ] Save the completed project to a new private GitHub repository named `mcl-water-boat-dashboard` when GitHub access is available.
+- [x] Save the completed project to a new private GitHub repository named `mcl-water-boat-dashboard` when GitHub access is available.
