@@ -43,3 +43,5 @@ No server, database, authentication, or pin changes are part of this project.
 ## Project structure
 
 The project uses a standard Vite + TypeScript layout: `public/` holds static route metadata, `src/` holds the browser client and dashboard styles, and the root contains Vite, TypeScript, ESLint, Prettier, Wrangler, and package configuration. The BLE contract and hardware pin map remain documented above.
+
+The original ESP32 firmware is included as [`public/mcl-water-boat.ino`](public/mcl-water-boat.ino). It is copied unchanged from the supplied Arduino source and is available from the built site as `/mcl-water-boat.ino`.
