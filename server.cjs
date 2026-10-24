@@ -35,7 +35,8 @@ const server = http.createServer((req, res) => {
     const extension = path.extname(file).toLowerCase();
     res.writeHead(200, {
       'Content-Type': mime[extension] || 'application/octet-stream',
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-cache',
+      'Permissions-Policy': 'bluetooth=(self)'
     });
     res.end(body);
   } catch {

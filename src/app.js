@@ -39,6 +39,19 @@ function setText(element, value) { if (element) element.textContent = value; }
 function number(value, digits = 2) { return Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : '--'; }
 function voltage(value) { return Number.isFinite(Number(value)) ? `${Number(value).toFixed(3)} V` : '-- V'; }
 
+function showBluetoothNotice(message, includeStandaloneLink = false) {
+  els.browserNotice.classList.remove('hidden');
+  els.browserNotice.textContent = message;
+  if (includeStandaloneLink) {
+    const link = document.createElement('a');
+    link.href = window.location.href;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = ' Open standalone dashboard';
+    els.browserNotice.append(link);
+  }
+}
+
 function log(message, tone = 'normal') {
   const entry = document.createElement('div');
   entry.className = `log-entry ${tone === 'muted' ? 'muted' : ''}`;
@@ -144,8 +157,7 @@ function startHold(button, command) {
 
 async function connectBoat() {
   if (!navigator.bluetooth) {
-    els.browserNotice.classList.remove('hidden');
-    setText(els.browserNotice, 'Web Bluetooth is unavailable here. Open this dashboard in Chrome or Edge over HTTPS.');
+    showBluetoothNotice('Web Bluetooth is unavailable here. Open this dashboard in Chrome or Edge over HTTPS.');
     setStatus('error', 'This browser does not expose Web Bluetooth.');
     return;
   }
@@ -166,6 +178,10 @@ async function connectBoat() {
     if (error.name === 'NotFoundError') {
       setStatus('offline', 'Bluetooth selection was cancelled.');
       log('Bluetooth selection cancelled.', 'muted');
+    } else if (error.name === 'SecurityError' || /permissions policy|disallowed by permissions policy|not allowed/i.test(error.message || '')) {
+      showBluetoothNotice('This embedded Preview frame blocks Bluetooth by browser permissions policy. Open the standalone HTTPS dashboard in Chrome or Edge, then connect there.', true);
+      setStatus('error', 'Bluetooth is blocked inside the embedded Preview frame.');
+      log('Bluetooth was blocked by the embedded Preview permissions policy.', 'muted');
     } else {
       setStatus('error', error.message || 'Unable to open the BLE session.');
       log('BLE connection failed. Check power, range, and UUIDs.', 'muted');
@@ -221,7 +237,7 @@ window.addEventListener('blur', () => { if (state.activeButton) stopMotors('Wind
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopMotors(null); });
 window.addEventListener('beforeunload', () => { if (state.commandCharacteristic) sendCommand('STOP'); });
 bindMotorControls();
-if (!navigator.bluetooth) { els.browserNotice.classList.remove('hidden'); setText(els.browserNotice, 'Web Bluetooth is unavailable in this browser. Use Chrome or Edge over HTTPS.'); }
+if (!navigator.bluetooth) showBluetoothNotice('Web Bluetooth is unavailable in this browser. Use Chrome or Edge over HTTPS.');
 setStatus('offline');
 setInterval(updateClock, 250);
 updateClock();

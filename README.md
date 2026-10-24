@@ -10,6 +10,8 @@ npm run dev
 
 Open the dashboard in Chrome or Edge over HTTPS when connecting to the physical ESP32. Web Bluetooth is not available in most other browsers or insecure origins.
 
+If the dashboard is opened inside an embedded Preview iframe, the browser may report `Access to the feature "bluetooth" is disallowed by permissions policy`. This is a browser container restriction, not an ESP32 or UUID error. Use the dashboard's **Open standalone dashboard** link, or open the HTTPS dashboard directly in a top-level Chrome or Edge tab. The standalone response includes `Permissions-Policy: bluetooth=(self)`.
+
 ## BLE contract
 
 - Device name: `MCL-Water-Boat`
